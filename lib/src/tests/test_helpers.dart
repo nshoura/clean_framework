@@ -43,12 +43,12 @@ void uiTest(
   UI Function()? builder,
   AppRouter? router,
   FutureOr<void> Function()? setup,
+  List<Override> Function()? overrides,
   FutureOr<void> Function(WidgetTester)? postFrame,
   bool wrapWithMaterialApp = true,
   Duration? pumpDuration,
   bool? skip,
   Timeout? timeout,
-  Duration? initialTimeout,
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   dynamic tags,
@@ -63,7 +63,6 @@ void uiTest(
   );
 
   final _router = router ?? _uiTestConfig?.router;
-  final _context = context ?? _uiTestConfig?.context;
 
   assert(
     () {
@@ -77,12 +76,6 @@ void uiTest(
     }(),
     '"router" should not be passed when wrapWithMaterialApp is false',
   );
-  assert(
-    () {
-      return _context != null;
-    }(),
-    'Either pass "context" or call "setupUITest()" before test block.',
-  );
 
   testWidgets(
     description,
@@ -95,7 +88,7 @@ void uiTest(
       await setup?.call();
 
       Widget _scopedChild(Widget child) {
-        return UncontrolledProviderScope(container: _context!(), child: child);
+        return ProviderScope(overrides: overrides?.call() ?? [], child: child);
       }
 
       Widget child;
@@ -131,7 +124,6 @@ void uiTest(
     },
     skip: skip,
     timeout: timeout,
-    initialTimeout: initialTimeout,
     semanticsEnabled: semanticsEnabled,
     variant: variant,
     tags: tags,
