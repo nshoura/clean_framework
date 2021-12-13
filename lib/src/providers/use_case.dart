@@ -30,6 +30,7 @@ abstract class UseCase<E extends Entity> extends StateNotifier<E> {
   @protected
   E get entity => super.state;
 
+  @visibleForTesting
   @protected
   set entity(newEntity) => super.state = newEntity;
 
